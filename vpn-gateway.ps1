@@ -56,3 +56,15 @@ New-SelfSignedCertificate -Type Custom -DnsName P2SChildCert -KeySpec Signature 
 -CertStoreLocation "Cert:\CurrentUser\My" `
 -Signer $cert -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2")
 
+# Upload the root certificate public key information
+$P2SRootCertName = "P2SRootCert.cer"
+$filePathForCert = ".\P2SRootCert.cer"
+$cert = new-object System.Security.Cryptography.X509Certificates.X509Certificate2($filePathForCert)
+$CertBase64 = [system.convert]::ToBase64String($cert.RawData)
+$p2srootcert = New-AzVpnClientRootCertificate -Name $P2SRootCertName -PublicCertData $CertBase64
+
+Add-AzVpnClientRootCertificate -VpnClientRootCertificateName $P2SRootCertName -VirtualNetworkGatewayname $GWName -ResourceGroupName $ResourceGroup -PublicCertData $CertBase64
+
+#Configure native VPN client
+$profile = New-AzVpnClientConfiguration -ResourceGroupName $ResourceGroup -Name $GWName -AuthenticationMethod "EapTls"
+$profile.VPNProfileSASUrl

@@ -3,10 +3,16 @@ param(
     [Parameter(Mandatory=$True)]
     [string] $ResourceGroupName,
     [Parameter(Mandatory=$True)]
-    [string] $VmName
+    [string] $VmName,
+    [string] $Subscription
 )
 
-Connect-AzAccount 
+if ($Subscription -ne "") {
+  Connect-AzAccount -Subscription $Subscription
+}
+else {
+  Connect-AzAccount  
+}
 
 #Create Resource Group
 New-AzResourceGroup -Name $ResourceGroupName -Location $Location

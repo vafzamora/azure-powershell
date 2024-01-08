@@ -21,22 +21,33 @@ param (
     [int]$NodeCount = 3
 )
 
+# read the contents of the file ~/.ssh/id_rsa.pub into a variable
+$sshPublicKey = Get-Content ~/.ssh/id_rsa.pub
+
 # Create a new resource group
 az group create --name $ResourceGroupName --location $Location
 
 # Deploy the .bicep file
-#az deployment group create --resource-group $ResourceGroupName --template-file "deploy.bicep" --parameters clusterName=$ClusterName --parameters --locationocation=$Location
+az deployment group create `
+    --resource-group $ResourceGroupName `
+    --template-file "deploy-aks.bicep" `
+    --parameters `
+        clusterName=$ClusterName `
+        sshPublicKey=$sshPublicKey `
+        location=$Location `
+        adminUsername="aksuser" `
+        nodeCount=$NodeCount
 
 # Deploy new AKS cluster
-az aks create `
-    --node-count $NodeCount `
-    --resource-group $ResourceGroupName `
-    --name $ClusterName `
-    --location  $Location `
-    --node-vm-size $VmSize `
-    --network-plugin azure `
-    --enable-oidc-issuer `
-    --enable-workload-identity `
-    --generate-ssh-key
+# az aks create `
+#     --node-count $NodeCount `
+#     --resource-group $ResourceGroupName `
+#     --name $ClusterName `
+#     --location  $Location `
+#     --node-vm-size $VmSize `
+#     --network-plugin azure `
+#     --enable-oidc-issuer `
+#     --enable-workload-identity `
+#     --ssh-key-value $sshPublicKey
 
 az aks get-credentials --resource-group $ResourceGroupName --name $ClusterName --overwrite-existing

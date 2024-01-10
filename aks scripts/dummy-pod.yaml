@@ -1,0 +1,31 @@
+#yaml manifest for a dummy pod using busybox image that must be running continuosly to keep the pod alive
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dummy-pod
+  labels:
+    app: dummy-pod
+spec:
+  containers:
+  - name: dummy-pod
+    image: busybox
+    command: ["/bin/sh", "-c", "while true; sleep 10m;done"]
+    # request 0.1 cpu and 100Mi memory for the pod
+    resources:
+      requests:
+        cpu: 0.1
+        memory: 100Mi
+      limits:
+        cpu: 0.1
+        memory: 100Mi
+    volumeMounts:
+    - name: ingressgateway-certs
+      mountPath: /etc/istio/ingressgateway-certs
+      readOnly: true
+  volumes:
+    - name: ingressgateway-certs
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          secretProviderClass: azure-tls

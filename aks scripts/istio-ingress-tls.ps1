@@ -1,6 +1,6 @@
 $hostName='demo.azure.com'
 
-# Create httpbin sample app
+# Deploy httpbin sample app
 @"
 # Copyright Istio Authors
 #
@@ -80,9 +80,9 @@ spec:
       protocol: HTTPS
     tls:
       mode: SIMPLE
-      # credentialName: ingress-tls-csi # must be the same as secret
-      serverCertificate: /etc/istio/ingressgateway-certs/aks-ingress-cert.crt
-      privateKey: /etc/istio/ingressgateway-certs/aks-ingress-cert.key
+      credentialName: ingress-tls-csi # must be the same as secret
+      # serverCertificate: /etc/istio/ingressgateway-certs/aks-ingress-cert.crt
+      # privateKey: /etc/istio/ingressgateway-certs/aks-ingress-cert.key
     hosts:
     - $hostName
 "@ | kubectl apply -f -
@@ -124,8 +124,8 @@ $SECURE_INGRESS_PORT=$(kubectl -n "$INGRESS_NS" get service "$INGRESS_NAME" -o j
 $TCP_INGRESS_PORT=$(kubectl -n "$INGRESS_NS" get service "$INGRESS_NAME" -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}')
 
 Write-Output "${INGRESS_HOST}:$INGRESS_PORT"
-Write-Output "${INGRESS_HOST}:$TCP_INGRESS_PORT"
 Write-Output "${INGRESS_HOST}:$SECURE_INGRESS_PORT"
+Write-Output "${INGRESS_HOST}:$TCP_INGRESS_PORT"
 
 curl -v -HHost:$hostName --resolve "${hostName}:${SECURE_INGRESS_PORT}:${INGRESS_HOST}" `
   --cacert aks-ingress-tls.crt "https://${hostName}:$SECURE_INGRESS_PORT/status/418"

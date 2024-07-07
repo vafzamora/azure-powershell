@@ -2,7 +2,7 @@ param location string = 'eastus'
 param clusterName string = 'myAKSCluster'
 param nodeCount int = 2
 param nodeVMSize string = 'Standard_DS2_v2'
-param kubeVersion string = '1.27.7'
+param kubeVersion string
 param sshPublicKey string
 param adminUsername string
 

@@ -18,7 +18,10 @@ param (
     [string]$VmSize = "Standard_DS2_v2",
 
     [Parameter()]
-    [int]$NodeCount = 3
+    [int]$NodeCount = 3,
+
+    [Parameter()]
+    [string]$Version = "1.29.4"
 )
 
 # read the contents of the file ~/.ssh/id_rsa.pub into a variable
@@ -36,18 +39,7 @@ az deployment group create `
         sshPublicKey=$sshPublicKey `
         location=$Location `
         adminUsername="aksuser" `
-        nodeCount=$NodeCount
-
-# Deploy new AKS cluster
-# az aks create `
-#     --node-count $NodeCount `
-#     --resource-group $ResourceGroupName `
-#     --name $ClusterName `
-#     --location  $Location `
-#     --node-vm-size $VmSize `
-#     --network-plugin azure `
-#     --enable-oidc-issuer `
-#     --enable-workload-identity `
-#     --ssh-key-value $sshPublicKey
+        nodeCount=$NodeCount `
+        kubeVersion=$Version
 
 az aks get-credentials --resource-group $ResourceGroupName --name $ClusterName --overwrite-existing

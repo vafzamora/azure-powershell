@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      volumeMounts:
+        - name: private-volume
+          mountPath: /data
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits: 
+          cpu: 250m
+          memory: 128Mi
+  volumes:
+    - name: private-volume
+      persistentVolumeClaim:
+        claimName: private-azurefile-pvc
